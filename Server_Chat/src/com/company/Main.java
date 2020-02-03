@@ -19,7 +19,7 @@ public class Main {
         ServerSocket serverSocket;
 
         Server() throws IOException {
-            serverSocket = new ServerSocket(9000);
+            serverSocket = new ServerSocket(8456);
         }
 
         @Override

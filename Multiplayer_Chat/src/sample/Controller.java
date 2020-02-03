@@ -7,6 +7,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
@@ -14,6 +15,7 @@ import javax.sound.sampled.*;
 import java.awt.event.ActionListener;
 import java.io.*;
 import java.net.Socket;
+
 
 public class Controller {
 
@@ -30,17 +32,25 @@ public class Controller {
     ActionListener taskPerformer;
 
     public Controller() throws IOException {
-        socket = new Socket("localhost", 9000);
+        socket = new Socket("localhost", 8456);
         out = new PrintWriter(socket.getOutputStream(), true);
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         runReadMessage();
     }
 
-    public void onSendButtonClick(ActionEvent actionEvent) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-        String outStr = MessageInput.getText();
-        out.println(outStr);
+    public void onSendButtonClick(ActionEvent actionEvent) {
+        try {
+            File f = new File("D:\\Programms\\Sound\\sound.mp3");
+            AudioInputStream ais = AudioSystem.getAudioInputStream(f);
+            Clip clip = AudioSystem.getClip();
+            clip.open(ais);
+            clip.start();
+        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+            e.printStackTrace();
+        }
+        String text = MessageInput.getText();
+        out.println(text);
         MessageInput.clear();
-        sound();
         try {
             Thread.sleep(1);
         } catch (InterruptedException e) {
@@ -48,12 +58,20 @@ public class Controller {
         }
     }
 
-    public void onKeyPress(KeyEvent keyEvent) {
-        if (keyEvent.getCode().equals(KeyCode.ENTER)) { //делаем отправку сообщения по нажатию Enter
-            String outStr = MessageInput.getText();
-            out.println(outStr);
+    public void onKeyPress(KeyEvent keyEvent){
+        if (keyEvent.getCode().equals(KeyCode.ENTER)) { // делаем отправку сообщения по нажатию Enter
+            try {
+                File f = new File("D:\\Programms\\Sound\\sound.mp3");
+                AudioInputStream ais = AudioSystem.getAudioInputStream(f);
+                Clip clip = AudioSystem.getClip();
+                clip.open(ais);
+                clip.start();
+            } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+                e.printStackTrace();
+            }
+            String text = MessageInput.getText();
+            out.println(text);
             MessageInput.clear();
-            sound();
         }
     }
 
@@ -63,7 +81,9 @@ public class Controller {
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
-                    ChatViewier.getChildren().add(new Text(fromServer + "\n"));
+                    Text text = new Text(fromServer + "\n");
+                    text.setFill(Color.PURPLE);
+                    ChatViewier.getChildren().add(text);
                     scrollPane.setVvalue(1.0);
                 }
             });
@@ -87,22 +107,5 @@ public class Controller {
             }
         }).start();
     }
-
-    void sound(){
-        try {
-            File f = new File("D:\\Programms\\Sound\\sound.mp3");
-            AudioInputStream ais = AudioSystem.getAudioInputStream(f);
-            Clip clip = AudioSystem.getClip();
-            clip.open(ais);
-            clip.start();
-        } catch (UnsupportedAudioFileException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (LineUnavailableException e) {
-            e.printStackTrace();
-        }
-    }
-
 }
 

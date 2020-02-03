@@ -7,6 +7,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.Date;
+import java.util.List;
 
 public class User extends Thread {
 
@@ -62,15 +63,19 @@ public class User extends Thread {
                         System.out.println(" changed login to " + name);
                         continue;
                     }
-                }
+                    if (cmd.equalsIgnoreCase("/q")){
+                        sendMessage("Server: Вы вышли из сервера! \uD83D\uDE00");
+                        break;
+                    }
 
+                }
                 synchronized (this) { /* с помошью synchronized не даём права запускать след.
                      поток перед тем как не выполним этот */
                     Main.messages.add(new UserMessage(login, id, new Date(), temp));
                 }
             } catch (SocketException e){
                 e.printStackTrace();
-                System.out.println("Connection with user " + login + " was lost!");/* При выходи пользователя сообщается всем */
+                System.out.println("Connection with user " + login + " was lost!");// При выходи пользователя сообщается всем
                 Main.users.remove(this);
                 break;
             }
