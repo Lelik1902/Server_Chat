@@ -36,7 +36,7 @@ public class Main {
 
         public void writeMessage() {
             while (true) {
-                synchronized (this) { /* с помошью synchronized не даём права запускать след.
+                synchronized (this) { /* с помошью synchronized не даём запускать след.
                     поток перед тем как не выполним этот */
                     if (!messages.isEmpty()) {
                         String temp = messages.get(messages.size() - 1).message;
@@ -59,12 +59,7 @@ public class Main {
         }
 
         public void runWriteMessage() {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    writeMessage();
-                }
-            }).start();
+            new Thread(() -> writeMessage()).start();
         }
     }
 }
